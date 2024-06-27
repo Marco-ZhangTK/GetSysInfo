@@ -48,21 +48,19 @@ void  GetSysInfo::SystemCpuInit()
 	status = PdhOpenQuery(NULL, NULL, &m_CpuQuery);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "打开 Pdh 查询句柄失败 错误码 ：" << GetLastError();
+		std::cerr  << "打开 Pdh 查询句柄失败 错误码 ：" << GetLastError() << std::endl;
 		return ;
 	}
 	status = PdhAddCounter(m_CpuQuery, ("\\Processor(_Total)\\% Processor Time"), NULL, &m_CpuTotal);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "累加 Pdh 数值失败 错误码 ：" << GetLastError() ;
-		//PdhCloseQuery(query);
+		std::cerr  << "累加 Pdh 数值失败 错误码 ：" << GetLastError() << std::endl ;
 		return;
 	}
 	status = PdhCollectQueryData(m_CpuQuery);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "搜集 Pdh 查询信息失败 错误码 ：" << GetLastError();
-		//PdhCloseQuery(query);
+		std::cerr  << "搜集 Pdh 查询信息失败 错误码 ：" << GetLastError() << std::endl;
 		return;
 	}
 #endif
@@ -75,34 +73,27 @@ void  GetSysInfo::SystemCpuInit(std::string& processName)
 	status = PdhOpenQuery(NULL, NULL, &m_CpuQuery);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "打开 Pdh 查询句柄失败 错误码 ：" << GetLastError();
+		std::cerr  << "打开 Pdh 查询句柄失败 错误码 ：" << GetLastError() << std::endl;
 		return;
 	}
-	//std::cout << "process id is :" << processID << std::endl;
 	std::string counterPath = "\\Process(" + processName + ")\\% Processor Time";
-	//std::cout << "---111---" << std::endl;
-	//sprintf(counterPath,TEXT("\\Process(%s)\\ % Processor Time"), processName.c_str());
-	//std::cout << "counterPath is :" << counterPath << std::endl;
 	status = PdhAddCounter(m_CpuQuery, (counterPath.c_str()), NULL, &m_CpuTotal);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "累加 Pdh 数值失败 错误码 ：" << GetLastError();
-		//PdhCloseQuery(query);
+		std::cerr  << "累加 Pdh 数值失败 错误码 ：" << GetLastError() << std::endl;
 		return;
 	}
 	std::string threadCounterPath = "\\Process(" + processName + ")\\Thread Count";
 	status = PdhAddCounter(m_CpuQuery, (threadCounterPath.c_str()), NULL, &m_ThreadCount);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "累加 Thread Pdh 数值失败 错误码 ：" << GetLastError();
-		//PdhCloseQuery(query);
+		std::cerr  << "累加 Thread Pdh 数值失败 错误码 ：" << GetLastError() << std::endl;
 		return;
 	}
 	status = PdhCollectQueryData(m_CpuQuery);
 	if (status != ERROR_SUCCESS) {
 		// 处理错误
-		LOG(ERROR) << "搜集 Pdh 查询信息失败 错误码 ：" << GetLastError();
-		//PdhCloseQuery(query);
+		std::cerr  << "搜集 Pdh 查询信息失败 错误码 ：" << GetLastError() << std::endl;
 		return;
 	}
 #endif
@@ -196,14 +187,12 @@ inline void GetSysInfo::get_cpuoccupy(cpuinfo& cpuoccupy,uint32_t& pid)
     std::string line;
    if (std::getline(file, line)) 
    {
-        //std::cout << "line = " << line << std::endl;
         std::istringstream ss(line);
         std::string pid, comm, state, ppid, pgrp, session, tty_nr, tpgid, flags;
         uint32_t minflt,cminflt,majflt;
         ss >> cpuoccupy.pid >> cpuoccupy.name >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags ;
         ss >> minflt >> cminflt >> majflt >> majflt >> cpuoccupy.user >> cpuoccupy.system ;
    }
-   //std::cout << "proc time = " << cpuoccupy.user + cpuoccupy.system << std::endl;
 
 }
 
